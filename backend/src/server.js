@@ -26,11 +26,10 @@ app.get("/books", (req, res) => {
 
 // ✅ Serve frontend in production (Render compatible)
 if (ENV.NODE_ENV === "production") {
-  const frontendPath = path.join(process.cwd(), "frontend", "dist");
+  const frontendPath = path.join(process.cwd(), "dist");
 
   app.use(express.static(frontendPath));
 
-  // Catch-all for React router
   app.use((req, res) => {
     res.sendFile(path.join(frontendPath, "index.html"));
   });

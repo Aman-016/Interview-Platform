@@ -14,7 +14,7 @@ function App() {
 
       <SignedOut>
         <SignInButton mode="modal">
-          <button className="">Sign Up</button>
+          <button className="">Login</button>
         </SignInButton>
       </SignedOut>
 

@@ -1,9 +1,16 @@
 import express from 'express';
 import { ENV } from './lib/env.js';
 import { connectDB } from './lib/db.js';
+import cors from 'cors';
+
+
 
 
 const app = express();
+
+//middleware
+app.use(express.json());
+app.use(cors());
 
 
 

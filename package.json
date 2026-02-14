@@ -2,19 +2,7 @@
   "name": "interview-platform",
   "private": true,
   "scripts": {
-  "build": "npm install --prefix frontend && npm install --prefix backend && npm run build --prefix frontend && cp -r frontend/dist backend/dist",
-  "start": "npm start --prefix backend"
-},
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Aman-016/Interview-Platform.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/Aman-016/Interview-Platform/issues"
-  },
-  "homepage": "https://github.com/Aman-016/Interview-Platform#readme"
+    "build": "npm install --prefix frontend && npm install --prefix backend && npm run build --prefix frontend && rm -rf backend/dist && mkdir backend/dist && cp -r frontend/dist/* backend/dist",
+    "start": "npm start --prefix backend"
+  }
 }

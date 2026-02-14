@@ -26,7 +26,7 @@ app.get("/books", (req, res) => {
 
 // ✅ Serve frontend in production (Render compatible)
 if (ENV.NODE_ENV === "production") {
-  const frontendPath = path.join(process.cwd(), "dist");
+  const frontendPath = path.join(process.cwd(), "backend", "dist");
 
   app.use(express.static(frontendPath));
 

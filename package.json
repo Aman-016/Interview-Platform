@@ -2,7 +2,7 @@
   "name": "interview-platform",
   "private": true,
   "scripts": {
-    "build": "npm install --prefix frontend && npm run build --prefix frontend",
-    "start": "node server.js"
+    "build": "npm install --prefix frontend && npm install --prefix backend && npm run build --prefix frontend && rm -rf backend/public && mkdir backend/public && cp -r frontend/dist/* backend/public",
+    "start": "npm start --prefix backend"
   }
 }

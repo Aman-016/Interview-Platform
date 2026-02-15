@@ -13,7 +13,7 @@ import sessionRoutes from "./routes/sessionRoute.js";
 
 const app = express();
 
-// Required for ES modules
+// ES module dirname fix
 const __dirname = path.resolve();
 
 // ================= Middleware =================
@@ -35,26 +35,25 @@ app.use("/api/inngest", serve({ client: inngest, functions }));
 app.use("/api/chat", chatRoutes);
 app.use("/api/sessions", sessionRoutes);
 
-// ================= Health Check =================
+// ================= Health =================
 
 app.get("/health", (req, res) => {
-  res.status(200).json({ msg: "API is running 🚀" });
+  res.status(200).json({ msg: "API running 🚀" });
 });
 
-// ================= Production Frontend =================
+// ================= Frontend Serve =================
 
 if (ENV.NODE_ENV === "production") {
-  const frontendPath = path.join(__dirname, "../frontend/dist");
+  const frontendPath = path.join(__dirname, "frontend", "dist");
 
   app.use(express.static(frontendPath));
 
-  // Serve React app for ALL routes
   app.get("*", (req, res) => {
     res.sendFile(path.join(frontendPath, "index.html"));
   });
 }
 
-// ================= Start Server =================
+// ================= Start =================
 
 const startServer = async () => {
   try {
@@ -63,8 +62,8 @@ const startServer = async () => {
     app.listen(ENV.PORT, () => {
       console.log(`Server running on port ${ENV.PORT}`);
     });
-  } catch (error) {
-    console.error("💥 Server startup failed:", error);
+  } catch (err) {
+    console.error("Server failed:", err);
   }
 };
 

@@ -40,15 +40,30 @@ app.get("/health", (req, res) => {
 // ================= Frontend Serve (Render Compatible) =================
 
 if (ENV.NODE_ENV === "production") {
-  const frontendPath = path.join(process.cwd(), "backend", "public");
+  // Resolve public folder relative to current file
+  const __dirname = path.dirname(new URL(import.meta.url).pathname);
+  const frontendPath = path.join(__dirname, "../../public");
 
   app.use(express.static(frontendPath));
 
-  // Express v5 catch-all
+  // Express v5 catch-all - serve index.html for SPA
   app.use((req, res) => {
-    res.sendFile(path.join(frontendPath, "index.html"));
+    res.sendFile(path.join(frontendPath, "index.html"), (err) => {
+      if (err) {
+        res.status(404).json({ error: "Not found" });
+      }
+    });
   });
 }
+
+// ================= Error Handler =================
+
+app.use((err, req, res, next) => {
+  console.error("Error:", err);
+  res.status(err.status || 500).json({
+    error: err.message || "Internal server error",
+  });
+});
 
 // ================= Start =================
 
@@ -61,7 +76,14 @@ const startServer = async () => {
     });
   } catch (err) {
     console.error("Server failed:", err);
+    process.exit(1);
   }
 };
 
 startServer();
+
+// Handle uncaught exceptions
+process.on("unhandledRejection", (err) => {
+  console.error("Unhandled rejection:", err);
+  process.exit(1);
+});

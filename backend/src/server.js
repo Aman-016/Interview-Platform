@@ -3,6 +3,7 @@ import path from "path";
 import cors from "cors";
 import { serve } from "inngest/express";
 import { clerkMiddleware } from "@clerk/express";
+
 import { ENV } from "./lib/env.js";
 import { connectDB } from "./lib/db.js";
 import { inngest, functions } from "./lib/inngest.js";
@@ -12,78 +13,38 @@ import sessionRoutes from "./routes/sessionRoute.js";
 
 const app = express();
 
-// ================= Middleware =================
+const __dirname = path.resolve();
 
+// middleware
 app.use(express.json());
-
-app.use(
-  cors({
-    origin: ENV.CLIENT_URL,
-    credentials: true,
-  })
-);
-
-app.use(clerkMiddleware());
-
-// ================= API Routes =================
+// credentials:true meaning?? => server allows a browser to include cookies on request
+app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
+app.use(clerkMiddleware()); // this adds auth field to request object: req.auth()
 
 app.use("/api/inngest", serve({ client: inngest, functions }));
 app.use("/api/chat", chatRoutes);
 app.use("/api/sessions", sessionRoutes);
 
-// ================= Health =================
-
 app.get("/health", (req, res) => {
-  res.status(200).json({ msg: "API running 🚀" });
+  res.status(200).json({ msg: "api is up and running" });
 });
 
-// ================= Frontend Serve (Render Compatible) =================
-
+// make our app ready for deployment
 if (ENV.NODE_ENV === "production") {
-  // Resolve public folder relative to current file
-  const __dirname = path.dirname(new URL(import.meta.url).pathname);
-  const frontendPath = path.join(__dirname, "../../public");
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-  app.use(express.static(frontendPath));
-
-  // Express v5 catch-all - serve index.html for SPA
-  app.use((req, res) => {
-    res.sendFile(path.join(frontendPath, "index.html"), (err) => {
-      if (err) {
-        res.status(404).json({ error: "Not found" });
-      }
-    });
+  app.get("/{*any}", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
   });
 }
-
-// ================= Error Handler =================
-
-app.use((err, req, res, next) => {
-  console.error("Error:", err);
-  res.status(err.status || 500).json({
-    error: err.message || "Internal server error",
-  });
-});
-
-// ================= Start =================
 
 const startServer = async () => {
   try {
     await connectDB();
-
-    app.listen(ENV.PORT, () => {
-      console.log(`Server running on port ${ENV.PORT}`);
-    });
-  } catch (err) {
-    console.error("Server failed:", err);
-    process.exit(1);
+    app.listen(ENV.PORT, () => console.log("Server is running on port:", ENV.PORT));
+  } catch (error) {
+    console.error("💥 Error starting the server", error);
   }
 };
 
 startServer();
-
-// Handle uncaught exceptions
-process.on("unhandledRejection", (err) => {
-  console.error("Unhandled rejection:", err);
-  process.exit(1);
-});

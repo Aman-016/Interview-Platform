@@ -1,7 +1,11 @@
-import React from 'react'
+import Navbar from "../components/Navbar";
 
-export default function ProblemsPage() {
+function ProblemsPage() {
   return (
-    <div>ProblemsPage</div>
-  )
+    <div className="min-h-screen bg-base-200">
+      <Navbar />
+    </div>
+  );
 }
+
+export default ProblemsPage;
